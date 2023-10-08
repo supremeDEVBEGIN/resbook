@@ -6,7 +6,7 @@ module.exports = (db) => {
     router.post("/booking", async (req, res) => {
         try {
             const { body } = req
-            db.collection("booking").insertOne({ ...body, time: new Date(body.time) })
+            db.collection("booking").insertOne({ ...body, time: new Date() })
             res.sendStatus(201)
         } catch (error) {
             console.log(error.message);
@@ -30,6 +30,64 @@ module.exports = (db) => {
             res.sendStatus(500)
         }
     })
+
+    router.delete("/booking/:id", async (req, res) => {
+        try {
+          const { id } = req.params;
+      
+          const deleteResult = await db.collection("booking").deleteOne({ _id: new ObjectId(id) });
+      
+          if (deleteResult.deletedCount === 1) {
+            res.status(200).json({ message: "ลบข้อมูลการจองเรียบร้อยแล้ว" });
+          } else {
+            res.status(404).json({ message: "ไม่พบข้อมูลการจองที่ต้องการลบ" });
+          }
+        } catch (error) {
+          console.log(error.message);
+          res.sendStatus(500);
+        }
+      });
+      
+      router.put("/booking/:id", async (req, res) => {
+        try {
+          const { id } = req.params;
+          const { body } = req;
+          console.log(body);
+          
+          const updatedBooking = await db.collection("booking").findOneAndUpdate(
+            { _id: new ObjectId(id) },
+            { $set: { ...body} },
+          );
+      
+          if (updatedBooking.value) {
+            res.status(200).json(updatedBooking.value);
+          } else {
+            res.status(404).json({ message: "ไม่พบข้อมูลการจองที่ต้องการแก้ไข" });
+          }
+        } catch (error) {
+          console.log(error.message);
+          res.sendStatus(500);
+        }
+      });
+      
+      
+      router.get("/booking/:id", async (req, res) => {
+        try {
+          const { id } = req.params;
+      
+          const booking = await db.collection("booking").findOne({ _id: new ObjectId(id) });
+      
+          if (booking) {
+            res.status(200).json(booking);
+          } else {
+            res.status(404).json({ message: "ไม่พบข้อมูลการจองที่ต้องการ" });
+          }
+        } catch (error) {
+          console.log(error.message);
+          res.sendStatus(500);
+        }
+      });
+      
 
 
     return router;

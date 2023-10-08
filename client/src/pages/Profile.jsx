@@ -15,7 +15,7 @@ function Profile() {
   });
 
   useEffect(() => {
-    API.get(`/profile/${params.tel}`)
+    API.get(`api/profile/${params.tel}`)
       .then((response) => {
         const { name, email, tel } = response.data;
         setProfileData({ name, email, tel });
@@ -27,7 +27,7 @@ function Profile() {
 
   const submitEdit = async () => {
     try {
-      await API.put(`/editprofile/${params.tel}`, {
+      await API.put(`api/editprofile/${params.tel}`, {
         name: profileData.name,
         email: profileData.email,
         tel: profileData.tel,
@@ -35,12 +35,14 @@ function Profile() {
 
       Swal.fire({
         icon: 'success',
-        title: 'บันทึกโปรไฟล์สำเร็จ!',
+        title: 'บันทึกโปรไฟล์สำเร็จ กรุณาเข้าสู่ระบบใหม่อีกครั้ง',
         showConfirmButton: false,
         timer: 1500,
       });
 
-      navigate('/home');
+      localStorage.clear();
+
+      navigate('/login');
     } catch (error) {
       console.error('เกิดข้อผิดพลาดในการอัพเดทโปรไฟล์:', error);
     }

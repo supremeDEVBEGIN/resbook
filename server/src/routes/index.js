@@ -7,7 +7,10 @@ var corsOptions = {
   origin: CORS_ORIGIN
 }
 
-const { register, login, profile, editProfile } = require('../controllers/users')
+const { register, login, profile, editProfile, loginLine } = require('../controllers/users')
+const { createUser,getUsers,getUserById,deleteUserById,updateDetailUsers} = require('../controllers/admin')
+const { history} = require('../controllers/history')
+const dashboard = require('../controllers/dashboard')
 const booking = require('../controllers/booking')
 
 module.exports = (db) => {
@@ -15,7 +18,9 @@ module.exports = (db) => {
     router.use(cors(corsOptions))
   }
 
-  router.use('/api', register(db), login(db), profile(db), editProfile(db),booking(db))
+  router.use('/api', register(db), login(db), profile(db), editProfile(db),booking(db),loginLine(db),history(db))
+  router.use('/api-admin',createUser(db),getUsers(db),getUserById(db),deleteUserById(db),updateDetailUsers(db))
+  router.use(dashboard(db))
 
   return router
 }

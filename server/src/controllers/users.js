@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+const moment = require('moment-timezone')
 
 exports.register = (db) => {
     const saltRounds = 10;
@@ -137,7 +138,6 @@ exports.editProfile = (db) => {
                 });
             }
 
-            // อัพเดตข้อมูลโปรไฟล์ในฐานข้อมูล
             const result = await db.collection('users').findOneAndUpdate(
                 { "tel": id },
                 {
@@ -170,6 +170,42 @@ exports.editProfile = (db) => {
     return router;
 }
 
+exports.loginLine = (db) => {
+    router.post('/loginline', async (req, res) => {
+        try {
+            const { userId, displayName ,tel ,email} = req.body;
 
+            const existingUser = await db.collection('users').findOne({ userId: userId });
+            console.log(existingUser);
 
+            if (existingUser) {
+                console.log('ข้อมูลผู้ใช้ LINE มีอยู่แล้ว');
+                res.status(200).json(existingUser);
+            } else {
+                let user = {
+                    userId: userId,
+                    name: displayName,
+                    email : 'Line',
+                    tel: moment().unix().toString(),
+                    level: 'user',
+                    addBy: 'Line'
+                }
+                db.collection('users').insertOne({
+                    userId: userId,
+                    name: displayName,
+                    email : 'Line',
+                    tel: moment().unix().toString(),
+                    level: 'user',
+                    addBy: 'Line'
+                });
 
+                res.status(200).json(user);
+            }
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({ error: 'เกิดข้อผิดพลาดในการบันทึกข้อมูล' });
+        }
+    });
+
+    return router;
+}

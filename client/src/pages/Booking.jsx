@@ -25,7 +25,7 @@ function Booking() {
     // console.log(arrTimeDf.concat(arrTimeF));
     // console.log(timeSelect);
     // if(!arrTimeDf.concat(arrTimeF).includes(timeSelect)){
-    API.post('/booking', { ...values, time: new Date, status: "booking" }).then(res => {
+    API.post('api/booking', { ...values, time: new Date(data.time), status: "รอการยืนยัน" }).then(res => {
       message.success("OK")
       window.location.reload()
     }).catch(res => {
@@ -57,7 +57,7 @@ function Booking() {
   const [data, setData] = useState()
 
   const getData = async () => {
-    let rawData = await API.get("/booking", { params: { table: tables } })
+    let rawData = await API.get("api/booking", { params: { table: tables } })
     console.log(rawData.data);
     setData(rawData.data)
   }
@@ -97,80 +97,80 @@ function Booking() {
     }
   }
 
-  let tableBooking = ["A1", "A2", "A3","A4","A5","B1", "B2", "B3","B4","B5","C1", "C2", "C3","C4","C5","D1", "D2", "D3","D4","D5"]
+  let tableBooking = ["A1", "A2", "A3", "A4", "A5", "B1", "B2", "B3", "B4", "B5", "C1", "C2", "C3", "C4", "C5", "D1", "D2", "D3", "D4", "D5"]
 
   return (
     <>
-    <Navbar/>
-    <div className="container">
-      <h2>ฟอร์มการจองโต๊ะ</h2>
-      <Form
-        form={form}
-        name="basic"
-        labelCol={{ span: 8 }}
-        wrapperCol={{ span: 16 }}
-        style={{ maxWidth: 600 }}
-        initialValues={{ remember: true }}
-        onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
-        autoComplete="off"
-      >
-        <Form.Item label="Table" name="table" rules={[{ required: true }]} /*onChange={e => { setTables(e.target.value) }}*/>
-          <Radio.Group className="custom-radio-group">
-            {data && tableBooking.map(id => {
-              let result = data?.find(res => { console.log(res); return res.table === id })
-              console.log(result);
-              if (result) {
-                return <Radio.Button value={id} disabled>{id}</Radio.Button>
-              } else {
-                return <Radio.Button value={id}>{id}</Radio.Button>
-              }
-            })}
-          </Radio.Group>
-        </Form.Item>
-        <Form.Item
-          label="Customer Name"
-          tooltip={{
-            title: 'Customer Name',
-            icon: <InfoCircleOutlined />,
-          }}
-          name="customer"
-          rules={[{ required: true }]}
+      <Navbar />
+      <div className="container mt-3">
+        <h2>จองโต๊ะ</h2>
+        <Form
+          form={form}
+          name="basic"
+          labelCol={{ span: 8 }}
+          wrapperCol={{ span: 16 }}
+          style={{ maxWidth: 600 }}
+          initialValues={{ remember: true }}
+          onFinish={onFinish}
+          onFinishFailed={onFinishFailed}
+          autoComplete="off"
         >
-          <Input placeholder="Name" />
-        </Form.Item>
-        <Form.Item
-          label="tel"
-          tooltip={{
-            title: 'Tel',
-            icon: <InfoCircleOutlined />,
-          }}
-          name="tel"
-          rules={[{ required: true }]}
-        >
-          <Input placeholder="Tel" />
-        </Form.Item>
-        <Form.Item
-          label="Number Of Customer"
-          tooltip={{
-            title: '5n',
-            icon: <InfoCircleOutlined />,
-          }}
-          name="count"
-          rules={[{ required: true }]}
-        >
-          <Input placeholder="input placeholder" type='number' />
-        </Form.Item>
-        {/* <Form.Item label="TimePicker" name="time" rules={[{ required: true }]}>
+          <Form.Item
+            label={<span style={{ color: 'white' }}>โต๊ะ</span>}
+            name="table"
+            rules={[{ required: true }]} /*onChange={e => { setTables(e.target.value) }}*/>
+            <Radio.Group className="custom-radio-group">
+              {data && tableBooking.map(id => {
+                let result = data?.find(res => { console.log(res); return res.table === id })
+                console.log(result);
+                if (result) {
+                  return <Radio.Button value={id} disabled>{id}</Radio.Button>
+                } else {
+                  return <Radio.Button value={id}>{id} </Radio.Button>
+                }
+              })}
+            </Radio.Group>
+          </Form.Item>
+          <Form.Item
+            label={<span style={{ color: 'white' }}>Customer Name</span>}
+            name="customer"
+            rules={[{ required: true }]}
+          >
+            <Input placeholder="Name" />
+          </Form.Item>
+
+          <Form.Item
+            label={<span style={{ color: 'white' }}>tel</span>}
+            name="tel"
+            rules={[{ required: true }]}
+          >
+            <Input placeholder="Tel" />
+          </Form.Item>
+
+          <Form.Item
+            label={<span style={{ color: 'white' }}>Number Of Customer</span>}
+            name="count"
+            rules={[{ required: true }]}
+          >
+            <Input placeholder="input placeholder" type='number' />
+          </Form.Item>
+
+          <Form.Item>
+            <p style={{ color: 'white' }}>เงื่อนไขการจองโต๊ะ:</p>
+            <p style={{ color: 'white' }}>-กรุณามาก่อนเวลา 20.00น. (ศ.-ส. หลุด 19.00น.) เพื่อไม่ให้โต๊ะหลุด</p>
+            <p style={{ color: 'white' }}>1 โต๊ะ นั่งได้ไม่เกิน 6 ท่าน</p>
+          </Form.Item>
+          {/* <Form.Item label="TimePicker" name="time" rules={[{ required: true }]}>
           <TimePicker defaultValue={dayjs()} format={"HH:mm"} minuteStep={60} disabledHours={() => range()} />
         </Form.Item> */}
-        <Form.Item >
-          <Button type="primary" htmlType="submit">
-            Submit
-          </Button>
-        </Form.Item>
-      </Form>
-    </div>
+          <Form.Item >
+            <Button type="primary" htmlType="submit" style={{ width: '200px', height: '40px' }}>
+              ยืนยันการจอง
+            </Button>
+
+          </Form.Item>
+        </Form>
+      </div>
     </>
   );
 }

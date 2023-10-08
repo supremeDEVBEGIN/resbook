@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import './nav.css'
 
 function Navbar() {
   const navigate = useNavigate();
@@ -8,6 +9,10 @@ function Navbar() {
   const token = localStorage.getItem('token');
   const tel = localStorage.getItem("tel");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const historyclick = (userId) => {
+    navigate(`/edituser/${userId}`);
+  };
 
   const logout = () => {
     Swal.fire({
@@ -31,16 +36,13 @@ function Navbar() {
   };
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-light bg-light">
+    <nav className="navbar navbar-expand-lg navbar-dark bg-dark " >
       <div className="container">
-        <Link className="navbar-brand" to={'/home'}>
-          หน้าหลัก
-        </Link>
-        {token && (
-          <Link className="navbar-brand" to={'/booking'}>
-            จองโต๊ะ
+        <div>
+          <Link className="navbar-brand" to={'/home'}>
+            <span>Resbook</span>
           </Link>
-        )}
+        </div>
         <button
           className="navbar-toggler"
           type="button"
@@ -49,15 +51,28 @@ function Navbar() {
           aria-controls="navbarNav"
           aria-expanded="false"
           aria-label="Toggle navigation"
+          style={{ marginLeft: 'auto' }}
         >
           <span className="navbar-toggler-icon"></span>
         </button>
         <div className="collapse navbar-collapse" id="navbarNav">
+          <div>
+            <Link className="navbar-brand" to={'/home'}>
+              หน้าหลัก
+            </Link>
+          </div>
+          <div>
+            {token && (
+              <Link className="navbar-brand" to={'/booking'}>
+                จองโต๊ะ
+              </Link>
+            )}
+          </div>
           <div className="navbar-nav ms-auto">
             {token ? (
               <div className={`dropdown ${isDropdownOpen ? 'show' : ''}`}>
                 <button
-                  className="btn btn-light dropdown-toggle"
+                  className="btn btn-dark border-0 dropdown-toggle"
                   type="button"
                   id="dropdownMenuButton"
                   data-bs-toggle="dropdown"
@@ -66,9 +81,9 @@ function Navbar() {
                 >
                   {user}
                 </button>
-                <ul className={`dropdown-menu ${isDropdownOpen ? 'show' : ''}`}>
+                <ul className={`dropdown-menu ${isDropdownOpen ? 'show' : ''} bg-dark border-0`}>
                   <li>
-                    <Link className="dropdown-item" to={`/profile/${tel}`}>
+                    <Link className="dropdown-item text-white" to={`/profile/${tel}`}>
                       โปรไฟล์
                     </Link>
                   </li>
@@ -76,8 +91,16 @@ function Navbar() {
                     <hr className="dropdown-divider" />
                   </li>
                   <li>
+                    <Link className="dropdown-item text-white" to={`/history/${user}`}>
+                      ประวัติการจอง
+                    </Link>
+                  </li>
+                  <li>
+                    <hr className="dropdown-divider" />
+                  </li>
+                  <li>
                     <button
-                      className="dropdown-item"
+                      className="dropdown-item text-white"
                       onClick={() => logout()}
                     >
                       ออกจากระบบ

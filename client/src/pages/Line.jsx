@@ -1,50 +1,46 @@
-import React, { useEffect, useState } from 'react';
-import liff from '@line/liff';
-
+import liff from '@line/liff'
+import React, { useEffect, useState } from 'react'
+import API from '../lib/api'
+import { useNavigate } from 'react-router-dom';
 function Line() {
-  const [name, setName] = useState('');
-  const [userLineID, setUserLineID] = useState('');
-  const [pictureUrl, setPictureUrl] = useState('');
-  const [email, setEmail] = useState('');
+
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        await liff.init({ liffId: '2000508817-q4MDljLR' });
-        const getProfile = await liff.getProfile();
-        setName(getProfile.displayName);
-        setUserLineID(getProfile.userId);
-        setPictureUrl(getProfile.pictureUrl);
+    liff.init({ liffId: '2000508817-Gm9roeQZ' })
+      .then(() => {
+        handleLogin()
+      })
+  }, [])
 
-        // ดึง ID Token จาก LIFF
-        const idToken = await liff.getIDToken();
-        
-        // ถอดรหัส ID Token เพื่อดึงข้อมูลอีเมล
-        const decodedToken = liff.getDecodedIDToken(idToken);
+  const handleLogin = async () => {
+    try {
+      const profile = await liff.getProfile();
+      const res = await API.post('/api/loginline', (profile))
+      console.log(profile);
 
-        // ตรวจสอบว่าข้อมูลอีเมลอยู่ใน ID Token หรือไม่
-        if (decodedToken && decodedToken.email) {
-          setEmail(decodedToken.email);
-        } else {
-          setEmail('ไม่พบอีเมล');
-        }
-      } catch (err) {
-        console.error(err);
+      localStorage.setItem('token', 'tokenLine')
+      localStorage.setItem('tel', res.data.tel)
+      localStorage.setItem('userId', res.data.userId);
+      localStorage.setItem('user', res.data.name);
+      localStorage.setItem('level', res.data.level);
+
+      if (res.data.level === 'user') {
+        navigate('/home');
+      } else if (res.data.level === 'admin') {
+        navigate('/dashboard');
       }
-    };
 
-    fetchData();
-  }, []);
+    } catch (err) {
+      console.log(err);
+    }
+  }
 
   return (
     <div>
-      {/* ที่นี่คุณสามารถแสดงข้อมูลที่คุณดึงมาจาก LIFF */}
-      <p>ชื่อ: {name}</p>
-      <p>LINE ID: {userLineID}</p>
-      <p>อีเมล: {email}</p>
-      <img src={pictureUrl} alt="รูปโปรไฟล์" />
+      <div>Line</div>
     </div>
-  );
+  )
 }
 
 export default Line;

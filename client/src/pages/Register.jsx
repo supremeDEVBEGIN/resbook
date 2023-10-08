@@ -1,5 +1,4 @@
 import{ useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import API from '../lib/api'
 import Swal from 'sweetalert2'
@@ -18,7 +17,7 @@ function Register() {
   const handleSubmit = (e) => { 
     e.preventDefault(); 
   
-    API.post(`/register`, {
+    API.post(`api/register`, {
       name: register.name,
       email: register.email,
       password: register.password,
