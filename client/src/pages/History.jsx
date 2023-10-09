@@ -3,6 +3,7 @@ import Navbar from '../components/Navbar';
 import API from '../lib/api';
 import { useParams } from 'react-router-dom';
 import { Card } from 'antd';
+import Swal from 'sweetalert2';
 
 function History() {
     const params = useParams();
@@ -15,7 +16,7 @@ function History() {
     const loadUsers = () => {
         API.get(`api/history/${params.id}`)
             .then((response) => {
-                console.log(response);
+                console.log(response.data);
                 const userData = response.data;
                 setHistory(userData);
             })
@@ -24,25 +25,37 @@ function History() {
             });
     }
 
-    const cancelBooking = (_id) => {
-        API.delete(`api/history/${_id}`)
-            .then((response) => {
-                console.log(response.data);
-                loadUsers();
-            })
-            .catch((error) => {
-                console.error(error);
-            });
+    const cancelBooking = (key) => {
+        Swal.fire({
+          title: 'ยืนยันการยกเลิกการจอง',
+          text: 'คุณต้องการยกเลิกการจองนี้หรือไม่?',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'ใช่, ยกเลิก',
+          cancelButtonText: 'ยกเลิก'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                API.delete(`api/history/${key}`)
+                    .then((response) => {
+                        console.log(response.data);
+                        loadUsers();
+                        Swal.fire('ยกเลิกการจองเรียบร้อย', '', 'success');
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                        Swal.fire('เกิดข้อผิดพลาดในการยกเลิก', '', 'error');
+                    });
+            }
+        });
     }
 
     return (
         <>
             <Navbar />
             <div className="container mt-5">
-                <h1>รายการจองโต๊ะ</h1>
+                <h1>ประวัติการจอง</h1>
                 {history.map((reservation) => (
                     <Card
-                        key={reservation.key}
                         style={{
                             fontSize: '16px',
                             marginBottom: '20px',
@@ -64,7 +77,7 @@ function History() {
                                 {reservation.status}
                             </span>
                         </p>
-                        <button type="button" class="btn btn-warning" onClick={() => cancelBooking(reservation.key)} >
+                        <button type="button" class="btn btn-warning" onClick={() => cancelBooking(reservation._id)} >
                             ยกเลิกการจอง
                         </button>
                     </Card>

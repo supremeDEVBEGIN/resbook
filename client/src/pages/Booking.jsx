@@ -8,6 +8,7 @@ import API from "../lib/api"
 import moment from "moment-timezone"
 import _ from "lodash"
 import Navbar from '../components/Navbar';
+import Swal from 'sweetalert2';
 function Booking() {
   const numRows = 4; // จำนวนแถวของโต๊ะ
   const numCols = 5; // จำนวนคอลัมน์ของโต๊ะ
@@ -20,21 +21,36 @@ function Booking() {
 
   const onFinish = (values) => {
     console.log('Success:', values);
-    const { time } = values
-    // let timeSelect = Number(dayjs(time).format("HH"))
-    // console.log(arrTimeDf.concat(arrTimeF));
-    // console.log(timeSelect);
-    // if(!arrTimeDf.concat(arrTimeF).includes(timeSelect)){
-    API.post('api/booking', { ...values, time: new Date(data.time), status: "รอการยืนยัน" }).then(res => {
-      message.success("OK")
-      window.location.reload()
-    }).catch(res => {
-      message.error(res.message)
-    })
-    // }else{
-    //   message.error("time error")
-    // }
+  
+    Swal.fire({
+      title: 'ยืนยันการจองโต๊ะ',
+      text: 'คุณต้องการยืนยันการจองโต๊ะหรือไม่?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'ใช่, ยืนยัน',
+      cancelButtonText: 'ยกเลิก'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const { time } = values;
+        API.post('api/booking', { ...values, time: new Date(data.time), status: "รอการยืนยัน" })
+          .then(res => {
+            Swal.fire({
+              title: 'จองโต๊ะสำเร็จ',
+              text: 'กรุณารอการยืนยัน',
+              icon: 'success',
+              confirmButtonText: 'ตกลง'
+            }).then(() => {
+              window.location.href = `/history/${user}`;
+            });
+          })
+          .catch(res => {
+            message.error(res.message);
+          });
+      }
+    });
   };
+
+
   const onFinishFailed = (errorInfo) => {
     console.log('Failed:', errorInfo);
   };
@@ -104,6 +120,7 @@ function Booking() {
       <Navbar />
       <div className="container mt-3">
         <h2>จองโต๊ะ</h2>
+        <img src="../public/stage.jpg" alt="STAGE" style={{ width: '100%'}} />
         <Form
           form={form}
           name="basic"

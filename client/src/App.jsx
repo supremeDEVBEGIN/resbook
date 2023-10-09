@@ -14,12 +14,14 @@ import EditUser from './pages/admin/userList/EditUser'
 import EditBooking from './pages/admin/editbooking/EditBooking'
 import History from './pages/History'
 import './App.css'
+import ShowTable from './pages/ShowTable'
 
 function App() {
   return (
     <>
       <Routes>
         <Route path='/' element={<Home />} />
+        <Route path='/showtable' element={<ShowTable />} />
         <Route path='/login' element={<Login />} />
         <Route path='/register' element={<Register />} />
         <Route path='/line' element={<Line />} />

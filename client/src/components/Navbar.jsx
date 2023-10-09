@@ -10,9 +10,6 @@ function Navbar() {
   const tel = localStorage.getItem("tel");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  const historyclick = (userId) => {
-    navigate(`/edituser/${userId}`);
-  };
 
   const logout = () => {
     Swal.fire({
@@ -59,6 +56,11 @@ function Navbar() {
           <div>
             <Link className="navbar-brand" to={'/home'}>
               หน้าหลัก
+            </Link>
+          </div>
+          <div>
+            <Link className="navbar-brand" to={'/showtable'}>
+              แผนผังที่นั่ง
             </Link>
           </div>
           <div>

@@ -32,6 +32,7 @@ function UserManage() {
   }
 
   const deleteUser = (userId) => {
+    console.log(userId);
     Swal.fire({
       title: 'ยืนยันการลบผู้ใช้งาน',
       text: 'คุณต้องการลบผู้ใช้งานนี้หรือไม่?',
